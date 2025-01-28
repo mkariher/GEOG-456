@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Assessment 2</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+        <script src="MindyPoints.geojson" ></script>
+    </head>
+    <body bgcolor="blanchedalmond">
+    <h3>A leaflet depicting the path of Tropical Storm Mindy in 2021</h3> 
+    <div id="mapid"></div>
+    
+        <style>
+        #mapid{ width: 900px; height: 500px; }
+        </style>
+        <script> 
+
+        var map = L.map('mapid').setView([31.7, -79.4], 6);
+
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+        }).addTo(map);
+
+        var HurricaneIcon = L.icon({  
+        iconUrl: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fhurricane%2Fhurricane_PNG14.png&f=1&nofb=1&ipt=9a7fe115c7d70e6d19ac0f3f65c29f95473a5258e42b237b522eee2c34902180&ipo=images',   
+        iconSize: [25,50],
+        popupAnchor: [0,0] 
+        });
+
+        var customPopup = "One site on the path of Tropical Storm Mindy in 2021. <br/><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Mindy_2021-09-08_2200Z.jpg/330px-Mindy_2021-09-08_2200Z.jpg' width='100px'/>";
+
+        L.geoJSON(MindyPoints, {  
+        pointToLayer: function (feature, latlng) { 
+        return L.marker(latlng, {icon: HurricaneIcon});}})
+        .bindPopup(customPopup)
+        .addTo(map);
+
+    </script>
+    </body>
+    </html>
