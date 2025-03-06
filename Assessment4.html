@@ -71,7 +71,8 @@ function myFunction(e) {
     var state = e.target.feature.properties.state
     var county = e.target.feature.properties.county
     var title = e.target.feature.properties.title
-    myInfo.innerHTML = "State: " + state + "<br>County: " + county + "<br>" + title
+    var date = e.target.feature.properties.date 
+    myInfo.innerHTML = "State: " + state + "<br>County: " + county + "<br>Date: " + date "<br>" + title
 }
 
 
