@@ -1,0 +1,50 @@
+MouseEvent.mozPressure is deprecated. Use PointerEvent.pressure instead. leaflet.js:5:320
+MouseEvent.mozInputSource is deprecated. Use PointerEvent.pointerType instead. leaflet.js:5:320
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 0
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 0
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 3
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 3
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 3
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 3
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 2
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 2
+L.marker BirthFeature.features.forEach (e -> L.marker([e.properties.BirthLat, 
+e.properties.BirthLong]).addToMap)
+Uncaught SyntaxError: unexpected token: identifier debugger eval code:1:10
+BirthFeature.features.forEach (e -> L.marker([e.properties.BirthLat, 
+e.properties.BirthLong]).addToMap)
+Uncaught SyntaxError: expected expression, got '>' debugger eval code:1:35
+BirthFeature.features.forEach (e = L.marker([e.properties.BirthLat, 
+e.properties.BirthLong]).addToMap)
+Uncaught ReferenceError: e is not defined
+    <anonymous> debugger eval code:1
+debugger eval code:1:46
+BirthFeature.features.forEach (e => L.marker([e.properties.BirthLat, 
+e.properties.BirthLong]).addToMap)
+Uncaught Error: Invalid LatLng object: (36.030137, undefined)
+    v LatLng.js:32
+    w LatLng.js:123
+    initialize Marker.js:112
+    e Class.js:24
+    marker Marker.js:418
+    <anonymous> debugger eval code:1
+    <anonymous> debugger eval code:1
+leaflet.js:5:7245
+BirthFeature.features.forEach (e => L.marker([e.properties.BirthLat, 
+e.properties.BirthLon]).addToMap)
+undefined
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 287
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 286
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 288
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 287
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 286
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 286
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 287
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 285
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 289
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 285
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 285
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 33
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 15
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 15
+A resource is blocked by OpaqueResponseBlocking, please check browser console for details. 15

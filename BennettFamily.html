@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3 Generations of Bennets</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="leaflet.curve.js"></script>
+  <script src="BirthGeoJSON.js"></script>
+  <script src="DeathGeoJSON.js"></script>
+  <link rel="stylesheet" href="MarkerCluster.css" />
+  <link rel="stylesheet" href="MarkerCluster.Default.css" />
+  <script src="leaflet.markercluster-src.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: blanchedalmond;
+    }
+    h2 { text-align: center; }
+    #container {
+      display: flex;
+      height: 100vh;
+    }
+    #mapid {
+      flex: 1;
+      border-radius: 10px;
+      margin: 10px;
+    }
+    #controlPanel {
+      width: 300px;
+      padding: 10px;
+      background: white;
+      overflow-y: auto;
+      border-left: 2px solid #ccc;
+      border-radius: 10px;
+      margin: 10px;
+    }
+    .legend {
+      background: white;
+      padding: 10px;
+      font-size: 14px;
+      line-height: 18px;
+      color: #555;
+      border-radius: 5px;
+      position: absolute;
+      top: 80px;
+      right: 30px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+    .legend i {
+      width: 18px;
+      height: 18px;
+      float: left;
+      margin-right: 8px;
+      opacity: 0.9;
+    }
+    .surnames-group {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+    <h2>From Yeoman Farmer to Engineer: The Diaspora of 3 Generations of Bennetts and 
+        Branch Families
+    </h2>
+  <div id="container">
+    <div id="mapid"></div>
+    <div id="controlPanel">
+      <h3>Filter by Generation</h3>
+      <label><input type="checkbox" value="0" checked> Generation 0</label><br>
+      <label><input type="checkbox" value="1" checked> Generation 1</label><br>
+      <label><input type="checkbox" value="2" checked> Generation 2</label><br>
+      <label><input type="checkbox" value="3" checked> Generation 3</label><br>
+
+      <h3>Filter by Surname</h3>
+      <div id="repeatingSurnames"></div>
+      <div class="surnames-group">
+        <input type="checkbox" id="nonRepeatingCheckbox" />
+        <label for="nonRepeatingCheckbox">Non-Repeating Surnames</label>
+  </div>
+
+  <script>
+    const map = L.map('mapid', { minZoom: 4 }).setView([40.967243, -103.771556], 4);
+
+    L.tileLayer('https://tile.thunderforest.com/pioneer/{z}/{x}/{y}.png?apikey=596a5d2e27834512b12a2fb11f1bb561', {
+      attribution: '&copy; Thunderforest, &copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const BirthIcon = L.icon({ iconUrl: 'Baby.png', iconSize: [30, 30] });
+    const DeathIcon = L.icon({ iconUrl: 'Skull.png', iconSize: [30, 30] });
+
+    const markers = new L.markerClusterGroup();
+    const allCurves = [];
+    const surnameCount = {};
+
+    L.Marker.mergeOptions({ icon: BirthIcon });
+    const BirthLayer = L.geoJson(BirthFeature, {
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(`Name: ${feature.properties.Name}<br>
+          Date of Birth: ${feature.properties.Birth}<br>
+          Date of Death: ${feature.properties.Death}<br>
+          Birth Location: ${feature.properties.BirthName}<br>
+          Death Location: ${feature.properties.DeathName}<br>
+          Cause of Death: ${feature.properties.DeathCause}<br>
+          Relation to James Bennett: ${feature.properties.BennettRelation}<br>
+          Generations removed from James Bennett: ${feature.properties.Generation}`);
+      }
+    });
+
+    L.Marker.mergeOptions({ icon: DeathIcon });
+    const DeathLayer = L.geoJson(DeathFeature, {
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(`Name: ${feature.properties.Name}<br>
+          Date of Birth: ${feature.properties.Birth}<br>
+          Date of Death: ${feature.properties.Death}<br>
+          Birth Location: ${feature.properties.BirthName}<br>
+          Death Location: ${feature.properties.DeathName}<br>
+          Cause of Death: ${feature.properties.DeathCause}<br>
+          Relation to James Bennett: ${feature.properties.BennettRelation}<br>
+          Generations removed from James Bennett: ${feature.properties.Generation}`);
+      }
+    });
+
+    function getColorByGeneration(gen) {
+      switch (parseInt(gen)) {
+        case 0: return '#e41a1c';
+        case 1: return '#377eb8';
+        case 2: return '#4daf4a';
+        case 3: return '#984ea3';
+        default: return '#999999';
+      }
+    }
+
+    function getRandomOffset() {
+      return (Math.random() - 0.5) * 2;
+    }
+
+    BirthFeature.features.forEach((feature) => {
+      const gen = feature.properties.Generation;
+      const surname = normalizeSurname(feature.properties.Name);
+      surnameCount[surname] = (surnameCount[surname] || 0) + 1;
+
+      const start = [feature.properties.BirthLat, feature.properties.BirthLon];
+      const end = [feature.properties.DeathLat, feature.properties.DeathLon];
+      const mid = [
+        (start[0] + end[0]) / 2 + getRandomOffset(),
+        (start[1] + end[1]) / 2 + getRandomOffset()
+      ];
+
+      //AI helped me with the curve randomness
+      const curve = L.curve(['M', start, 'Q', mid, end], {
+        color: getColorByGeneration(gen),
+        weight: 2
+      }).addTo(map);
+
+      allCurves.push({ curve, generation: gen, surname });
+    });
+
+    //AI helped me on this surname normalization function too
+    function normalizeSurname(fullName) {
+      const parts = fullName.trim().split(/\s+/);
+      let surname = parts[parts.length - 1].toLowerCase();
+
+      if (["jr.", "sr."].includes(surname) && parts.length >= 2) {
+        surname = parts[parts.length - 2].toLowerCase();
+      }
+
+      if (surname === "bennitt") {
+        surname = "bennett";
+      }
+
+      return surname;
+    }
+
+    const repeatingSurnamesDiv = document.getElementById('repeatingSurnames');
+    function populateSurnameCheckboxes() {
+      repeatingSurnamesDiv.innerHTML = '';
+      Object.keys(surnameCount).sort().forEach(surname => {
+        if (surnameCount[surname] > 1) {
+          const label = document.createElement('label');
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.value = surname;
+          checkbox.checked = true;
+          checkbox.addEventListener('change', applyFilters);
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(' ' + surname.charAt(0).toUpperCase() + surname.slice(1)));
+          repeatingSurnamesDiv.appendChild(label);
+          repeatingSurnamesDiv.appendChild(document.createElement('br'));
+        }
+      });
+    }
+
+    document.getElementById('nonRepeatingCheckbox').addEventListener('change', function() {
+      applyFilters();
+    });
+
+    function applyFilters() {
+      const selectedGens = Array.from(document.querySelectorAll('#controlPanel input[type="checkbox"]:checked')).map(cb => cb.value);
+      const selectedSurnames = Array.from(document.querySelectorAll('#repeatingSurnames input[type="checkbox"]:checked')).map(cb => cb.value);
+      const nonRepeatingChecked = document.getElementById('nonRepeatingCheckbox').checked;
+      const nonRepeatingSurnames = Object.keys(surnameCount).filter(surname => surnameCount[surname] === 1);
+
+      if (nonRepeatingChecked) {
+        selectedSurnames.push(...nonRepeatingSurnames);
+      }
+
+      allCurves.forEach(({ curve, generation, surname }) => {
+        if (selectedGens.includes(String(generation)) && selectedSurnames.includes(surname)) {
+          curve.addTo(map);
+        } else {
+          map.removeLayer(curve);
+        }
+      });
+    }
+
+    populateSurnameCheckboxes();
+
+    document.querySelectorAll('#controlPanel input[type="checkbox"]').forEach(input => {
+      input.addEventListener('change', applyFilters);
+    });
+
+    const legend = L.control({ position: 'topright' });
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div', 'legend');
+      div.innerHTML = `
+        <strong>Generations</strong><br>
+        <i style="background: #e41a1c"></i> 0<br>
+        <i style="background: #377eb8"></i> 1<br>
+        <i style="background: #4daf4a"></i> 2<br>
+        <i style="background: #984ea3"></i> 3<br>
+      `;
+      return div;
+    };
+    legend.addTo(map);
+
+    markers.addLayer(BirthLayer);
+    markers.addLayer(DeathLayer);
+    map.addLayer(markers);
+  </script>
+</body>
+</html>
